@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
+	"github.com/gopulse/helpers"
 	"os"
 	"os/signal"
 	"syscall"
@@ -14,11 +15,14 @@ func main() {
 		return
 	}
 
-	discord.AddHandler(messageCreate)
+	discord.AddHandler(helpers.CreateMessage)
+
+	discord.Identify.Intents = discordgo.IntentsGuildMessages
 
 	err = discord.Open()
 	if err != nil {
-		panic(err)
+		fmt.Println("error opening connection,", err)
+		return
 	}
 
 	fmt.Println("Bot is running")
@@ -30,17 +34,4 @@ func main() {
 	if err != nil {
 		return
 	}
-}
-
-func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if m.ChannelID != "1095489906450628690" {
-		return
-	}
-
-	// Ignore messages from bots
-	if m.Author.Bot {
-		return
-	}
-
-	fmt.Printf("[%s] %s: %s\n", m.ChannelID, m.Author.Username, m.Content)
 }
